@@ -2,6 +2,7 @@
 #define RCUBE_H
 
 #include <iostream>
+#include <cstdlib>
 using namespace std;
 
 class RCube
@@ -21,6 +22,7 @@ public:
 	void turnRight();
 	void turnFront();
 	void turnBack();
+	void scramble();
 };
 
 #include "RCube.cpp"

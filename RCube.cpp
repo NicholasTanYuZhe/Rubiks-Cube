@@ -197,3 +197,25 @@ void RCube::turnBack()
 		left[2-i][0] = temp;
 	}
 }
+
+void RCube::scramble()
+{
+	for(int i=0; i<5; i++)
+	{
+		int x = rand() % 6;
+		cout << x << " ";
+		if(x == 0)
+			turnUp();
+		else if(x == 1)
+			turnDown();
+		else if(x == 2)
+			turnLeft();
+		else if(x == 3)
+			turnRight();
+		else if(x == 4)
+			turnFront();
+		else if(x == 5)
+			turnBack();
+	}
+	cout << "\n";
+}

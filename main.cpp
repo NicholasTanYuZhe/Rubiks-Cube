@@ -35,12 +35,13 @@ int main()
 		if(answer == 1)
 		{
 			cube.display();
+			cube.scramble();
 			//cube.turnUp();
 			//cube.turnDown();
 			//cube.turnLeft();
 			//cube.turnRight();
 			//cube.turnFront();
-			cube.turnBack();
+			//cube.turnBack();
 			cube.display();
 		}
 		else if(answer == 2)
