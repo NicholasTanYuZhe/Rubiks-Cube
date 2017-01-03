@@ -1,2 +1,2 @@
-# Rubik-s-Cube
+# Rubiks-Cube
 A Rubik's Cube solver.
