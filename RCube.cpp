@@ -122,8 +122,8 @@ void RCube::turnLeft()
 	for(int i=0; i<3; i++)
 	{
 		temp = up[i][0];
-		up[i][0] = back[i][2];
-		back[i][2] = down[i][0];
+		up[i][0] = back[2-i][2];
+		back[2-i][2] = down[i][0];
 		down[i][0] = front[i][0];
 		front[i][0] = temp;
 	}
@@ -147,8 +147,8 @@ void RCube::turnRight()
 		temp = up[i][2];
 		up[i][2] = front[i][2];
 		front[i][2] = down[i][2];
-		down[i][2] = back[i][0];
-		back[i][0] = temp;
+		down[i][2] = back[2-i][0];
+		back[2-i][0] = temp;
 	}
 }
 
