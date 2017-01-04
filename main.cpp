@@ -38,10 +38,16 @@ int main()
 			//cube.scramble();
 			//cube.turnUp();
 			//cube.turnDown();
-			cube.turnLeft();
+			//cube.turnLeft();
 			//cube.turnRight();
 			//cube.turnFront();
 			//cube.turnBack();
+			//cube.turnCUp();
+			//cube.turnCDown();
+			//cube.turnCLeft();
+			//cube.turnCRight();
+			//cube.turnCFront();
+			//cube.turnCBack();
 			cube.display();
 		}
 		else if(answer == 2)

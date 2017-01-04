@@ -22,6 +22,12 @@ public:
 	void turnRight();
 	void turnFront();
 	void turnBack();
+	void turnCUp();
+	void turnCDown();
+	void turnCLeft();
+	void turnCRight();
+	void turnCFront();
+	void turnCBack();
 	void scramble();
 };
 
