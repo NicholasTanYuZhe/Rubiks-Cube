@@ -14,7 +14,6 @@ using namespace std;
 int main()
 {
 	int answer = 0, input;
-	vector<int> sequence;
 	RCube cube;
 	while(answer == 0)
 	{
@@ -31,23 +30,15 @@ int main()
 			 << "2. Help\n"
 			 << "Please enter 1 - 2 to continue\n"
 			 << "-> ";
-		cin >> answer;
+		//cin >> answer;
+			 answer= 1;
 		if(answer == 1)
 		{
 			cube.display();
-			//cube.scramble();
-			//cube.turnUp();
-			//cube.turnDown();
-			//cube.turnLeft();
-			//cube.turnRight();
-			//cube.turnFront();
-			//cube.turnBack();
-			//cube.turnCUp();
-			//cube.turnCDown();
-			//cube.turnCLeft();
-			//cube.turnCRight();
-			//cube.turnCFront();
-			//cube.turnCBack();
+			//cube.setup();
+			cube.scramble(10);
+			cube.display();
+			cube.solve();
 			cube.display();
 		}
 		else if(answer == 2)
