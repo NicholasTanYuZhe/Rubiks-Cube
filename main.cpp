@@ -13,11 +13,14 @@ using namespace std;
 
 int main()
 {
-	int answer = 0, input;
+	int answer = 0, input, num;
 	RCube cube;
+	vector<int> sequence;
+	bool errorChecking = false;
 	while(answer == 0)
 	{
 		system("CLS");
+		cube.reset(sequence);
 		cout << "==========================================================\n"
 			 << "|   TCP2101 - Algorithm Design and Analysis Assignment   |\n"
 			 << "|                Rubik's Cube Simulation                 |\n"
@@ -26,20 +29,46 @@ int main()
 			 << "Prepared by:\n"
 			 << "Name: Nicholas Tan Yu Zhe\tID: 1142701655\n"
 			 << "Name: Liew Soon Pang\t\tID: 1142700808\n\n"
-			 << "1. Scramble the Rubik's Cube\n"
+			 << "1. Scramble and solve the Rubik's Cube\n"
 			 << "2. Help\n"
 			 << "Please enter 1 - 2 to continue\n"
 			 << "-> ";
-		//cin >> answer;
-			 answer= 1;
+		cin >> answer;
+
+		if(answer != 1 && answer != 2)
+		{
+			cout << "You have type in an invalid input.\n";
+			system("pause");
+			answer = 0;
+		}
+
 		if(answer == 1)
 		{
+			errorChecking = false;
+			while(!errorChecking)
+			{
+				cout << "How many times to scramble the Rubik's Cube?\n"
+					 << "-> ";
+				cin >> num;
+				if(num < 0)
+					cout << "Please enter more than 1\n";
+				else
+					errorChecking = true;
+			}
+			cube.scramble(num);
 			cube.display();
-			//cube.setup();
-			cube.scramble(10);
+			cube.solve(sequence);
 			cube.display();
-			cube.solve();
-			cube.display();
+			cube.displayTurn(sequence);
+			int a = sequence.size();
+			cout << "Size =  " << a << "\n\n\n\n";
+			cube.reduce(sequence);
+			cube.displayTurn(sequence);
+			int b = sequence.size();
+			cout << "Size after reduce=  " << b << "\n\n\n";
+			cout << "Diff = " << a-b << "\n";
+			answer = 0;
+			system("pause");
 		}
 		else if(answer == 2)
 		{
@@ -60,7 +89,10 @@ int main()
 				 << "D = Down\n"
 				 << "M = Middle (The layer between L and R, turn direction as L)\n"
 				 << "E = Equator (The layer between U and D, turn direction as D)\n"
-				 << "S = Standing (The layer between F and B, turn direction as F)\n\n";
+				 << "S = Standing (The layer between F and B, turn direction as F)\n"
+				 << "X = Rotate the entire Rubik's Cube to Up, turn direction as R\n"
+				 << "Y = Rotate the entire Rubik's Cube to Left, turn direction as U\n"
+				 << "Z = Rotate the entire Rubik's Cube to Side Right, turn direction as F\n\n";
 			answer = 0;
 			system("pause");
 		}

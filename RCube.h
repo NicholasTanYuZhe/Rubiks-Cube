@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <cstdlib>
-#include <ctime>
+#include <chrono>
 #include <vector>
 using namespace std;
 
@@ -13,7 +13,7 @@ class RCube
 public:
 	RCube();
 	void display();
-	void reset();
+	void reset(vector<int>& sequence);
 	void setup();
 	void turnUp();
 	void turnDown();
@@ -48,9 +48,10 @@ public:
 	void turnCubeToDown();
 	void turnCubeSideToLeft();
 	void turnCubeSideToRight();
-	void displayTurn(vector<int> array);
+	void displayTurn(vector<int> sequence);
+	void reduce(vector<int>& sequence);
 	void scramble(int times);
-	void solve();
+	void solve(vector<int>& sequence);
 };
 
 #include "RCube.cpp"
