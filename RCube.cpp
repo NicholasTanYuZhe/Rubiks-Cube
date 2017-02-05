@@ -54,8 +54,6 @@ void RCube::reset(vector<int>& sequence)
 
 void RCube::setup()
 {
-	//int sequence[] = {1,2,4,5,1,3,2,4,1,4,2,1,5,2,5,5,2,2,5,1,2,1,3,1,3,3,3,3,4,5,3,4,1,4,4,5,1,3,3,2,5,4,2,5,4,6,6,6,6,6,6,6,6,6};
-	//int sequence[] = {1,4,3,3,1,2,4,5,2,5,4,1,5,2,4,5,2,2,3,2,1,1,3,1,3,3,3,5,3,1,3,4,1,4,4,5,2,1,4,2,5,4,2,5,4,6,6,6,6,6,6,6,6,6};
 	int sequence[] = {1,1,5,1,1,5,4,2,3,4,4,3,2,2,2,2,5,6,6,1,2,6,3,3,5,4,4,6,1,1,4,4,5,5,5,1,4,3,3,2,5,3,2,3,3,2,6,6,4,6,6,1,6,5};
 
 	for(int i=0; i<54; i++)
@@ -791,60 +789,72 @@ void RCube::displayTurn(vector<int> sequence)
 
 void RCube::reduce(vector<int>& sequence)
 {
-	for(int i=0; i<sequence.size()-1; i++)
+	if(sequence.size() > 1)
 	{
-		if((sequence[i]+9 == sequence[i+1]) && sequence[i] < 9) //To reduce clockwise with anti-clockwise
+		if(sequence.size() > 3)
 		{
-			sequence.erase(sequence.begin()+i);
-			sequence.erase(sequence.begin()+i);
+			for(int i=0; i<sequence.size()-3; i++)
+			{
+				if(sequence.size() > 1)
+				{
+					if((sequence[i] == sequence[i+1]) && (sequence[i] == sequence[i+2]) && (sequence[i] == sequence[i+3]) && sequence.size() > 3) //Remove 4 same move
+					{
+						sequence.erase(sequence.begin()+i);
+						sequence.erase(sequence.begin()+i);
+						sequence.erase(sequence.begin()+i);
+						sequence.erase(sequence.begin()+i);
+					}
+				}
+				else
+					break;
+			}
 		}
-
-		if((sequence[i]+1 == sequence[i+1]) && sequence[i] > 26 && sequence[i] < 33) //X X' Y Y' Z Z'
+		if(sequence.size() > 1)
 		{
-			sequence.erase(sequence.begin()+i);
-			sequence.erase(sequence.begin()+i);
-		}
-	}
-	for(int i=0; i<sequence.size()-3; i++)
-	{
-		if((sequence[i] == sequence[i+1]) && (sequence[i] == sequence[i+2]) && (sequence[i] == sequence[i+3])) //Remove 4 same move
-		{
-			sequence.erase(sequence.begin()+i);
-			sequence.erase(sequence.begin()+i);
-			sequence.erase(sequence.begin()+i);
-			sequence.erase(sequence.begin()+i);
-		}
-	}
-	for(int i=0; i<sequence.size()-1; i++)
-	{
-		if(sequence[i] == sequence[i+1] && sequence[i] < 9) //To merge 2 same move (Clockwise)
-		{
-			sequence.erase(sequence.begin()+i);
-			sequence[i] = sequence[i] + 18;
-		}
-		if(sequence[i] == sequence[i+1] && sequence[i] > 8 && sequence[i] < 18) //To merge 2 same move (Counter Clockwise)
-		{
-			sequence.erase(sequence.begin()+i);
-			sequence[i] = sequence[i] + 9;
-		}
-		if(sequence[i] == sequence[i+1] && sequence[i] > 26 && sequence[i] < 33) //To merge 2 same move (X Y Z)
-		{
-			sequence.erase(sequence.begin()+i);
-			if(sequence[i] == 27)
-				sequence[i] = sequence[i] + 6;
-			else if(sequence[i] == 28 || sequence[i] == 29)
-				sequence[i] = sequence[i] + 5;
-			else if(sequence[i] == 30 || sequence[i] == 31)
-				sequence[i] = sequence[i] + 4;
-			else if(sequence[i] == 32)
-				sequence[i] = sequence[i] + 3;
+			for(int i=0; i<sequence.size()-1; i++)
+			{
+				if(sequence.size() > 1)
+				{
+					if((sequence[i]+9 == sequence[i+1]) && sequence[i] < 9 && sequence.size() > 1) //To reduce clockwise with anti-clockwise
+					{
+						sequence.erase(sequence.begin()+i);
+						sequence.erase(sequence.begin()+i);
+					}
+					if((sequence[i]+1 == sequence[i+1]) && sequence[i] > 26 && sequence[i] < 33 && sequence.size() > 1) //X X' Y Y' Z Z'
+					{
+						sequence.erase(sequence.begin()+i);
+						sequence.erase(sequence.begin()+i);
+					}
+					if(sequence[i] == sequence[i+1] && sequence[i] < 9 && sequence.size() > 1) //To merge 2 same move (Clockwise)
+					{
+						sequence.erase(sequence.begin()+i);
+						sequence[i] = sequence[i] + 18;
+					}
+					if(sequence[i] == sequence[i+1] && sequence[i] > 8 && sequence[i] < 18 && sequence.size() > 1) //To merge 2 same move (Counter Clockwise)
+					{
+						sequence.erase(sequence.begin()+i);
+						sequence[i] = sequence[i] + 9;
+					}
+					if(sequence[i] == sequence[i+1] && sequence[i] > 26 && sequence[i] < 33 && sequence.size() > 1) //To merge 2 same move (X Y Z)
+					{
+						sequence.erase(sequence.begin()+i);
+						if(sequence[i] == 27 || sequence[i] == 28) //X / X'
+							sequence[i] = 33;
+						else if(sequence[i] == 29 || sequence[i] == 30) //Y / Y'
+							sequence[i] = 34;
+						else if(sequence[i] == 31 || sequence[i] == 32) //Z / Z'
+							sequence[i] = 35;
+					}
+				}
+				else
+					break;
+			}
 		}
 	}
 }
 
 void RCube::scramble(int times)
 {
-	srand(time(NULL));
 	vector<int> scrambleArray;
 	for(int i=0; i<times; i++)
 	{
@@ -853,7 +863,7 @@ void RCube::scramble(int times)
 			random = random + 3;
 		scrambleArray.push_back(random);
 	}
-	reduce(scrambleArray);
+	//reduce(scrambleArray);
 	displayTurn(scrambleArray);
 
 	for(int i=0; i<scrambleArray.size(); i++)
@@ -870,20 +880,19 @@ void RCube::scramble(int times)
 			turnFront();
 		else if(scrambleArray[i] == 5)
 			turnBack();
-		else if(scrambleArray[i] == 6)
-			turnCUp();
-		else if(scrambleArray[i] == 7)
-			turnCDown();
-		else if(scrambleArray[i] == 8)
-			turnCLeft();
 		else if(scrambleArray[i] == 9)
-			turnCRight();
+			turnCUp();
 		else if(scrambleArray[i] == 10)
-			turnCFront();
+			turnCDown();
 		else if(scrambleArray[i] == 11)
+			turnCLeft();
+		else if(scrambleArray[i] == 12)
+			turnCRight();
+		else if(scrambleArray[i] == 13)
+			turnCFront();
+		else if(scrambleArray[i] == 14)
 			turnCBack();
 	}
-	cout << "End of scramble\n\n\n\n\n";
 }
 
 void RCube::solve(vector<int>& sequence)
@@ -892,9 +901,6 @@ void RCube::solve(vector<int>& sequence)
 	int diff, diff2, temp;
 	int currentSide[] = {2, 3, 4, 5};
 	int i = 1, counter;
-
-	//Start timer
-	auto start = chrono::system_clock::now();
 
 	//Step 1: Solve white cross
 	while(!step1)
@@ -2294,9 +2300,4 @@ void RCube::solve(vector<int>& sequence)
 			}
 		}
 	}
-	cout << "Completed\n";
-
-	auto end = chrono::system_clock::now();
-	chrono::duration<double> duration = end - start;
-	cout << "Time elapsed: " << duration.count() << "s\n";
 }

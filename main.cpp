@@ -8,15 +8,73 @@ Conduct experimental tests to evaluate the effectiveness (measures the running t
 #include <cstdlib>
 #include <vector>
 #include <string>
+#include <windows.h>
+#include <fstream>
+#include <ctime>
 #include "RCube.h"
 using namespace std;
 
+double PCFreq = 0.0;
+__int64 CounterStart = 0;
+
+void startCounter()
+{
+    LARGE_INTEGER li;
+    if(!QueryPerformanceFrequency(&li))
+    cout << "QueryPerformanceFrequency failed!\n";
+
+    PCFreq = double(li.QuadPart)/1000000.0;
+
+    QueryPerformanceCounter(&li);
+    CounterStart = li.QuadPart;
+}
+
+double getCounter()
+{
+    LARGE_INTEGER li;
+    QueryPerformanceCounter(&li);
+    return double(li.QuadPart-CounterStart)/PCFreq;
+}
+
+void saveCSV(int first, int second, int third, vector<double> timer1, vector<double> timer2, vector<double> timer3)
+{
+	ofstream save;
+	double sum1 = 0, sum2 = 0, sum3 = 0;
+	for(int i=0; i<timer1.size(); i++)
+	{
+		sum1 = sum1 + timer1[i];
+		sum2 = sum2 + timer2[i];
+		sum3 = sum3 + timer3[i];
+	}
+	sum1 = sum1/timer1.size();
+	sum2 = sum2/timer2.size();
+	sum3 = sum3/timer3.size();
+	save.open("RunningTime.csv");
+	save << "Timer1(" << first << "), " << "Timer2(" << second << "), " << " Timer3(" << third << ")," << " , Average(" << first << "), Average(" << second << "), Average(" << third << ")\n";
+	for(int i=0; i<timer1.size(); i++)
+	{
+		if(i == 0)
+		{
+			save << timer1[i] << "," << timer2[i] << "," << timer3[i] << "," << "," << sum1 << "," << sum2 << "," << sum3 << "\n";
+		}
+		else
+			save << timer1[i] << "," << timer2[i] << "," << timer3[i] << "\n";
+	}
+	save.close();	
+}
+
 int main()
 {
+	srand(time(NULL));
 	int answer = 0, input, num;
 	RCube cube;
 	vector<int> sequence;
 	bool errorChecking = false;
+	double interval;
+	int first, second, third, size;
+	vector<double> timer1;
+	vector<double> timer2;
+	vector<double> timer3;
 	while(answer == 0)
 	{
 		system("CLS");
@@ -31,11 +89,13 @@ int main()
 			 << "Name: Liew Soon Pang\t\tID: 1142700808\n\n"
 			 << "1. Scramble and solve the Rubik's Cube\n"
 			 << "2. Help\n"
-			 << "Please enter 1 - 2 to continue\n"
+			 << "3. Generate CSV\n"
+			 << "4. Quit\n"
+			 << "Please enter 1 - 4 to continue\n"
 			 << "-> ";
 		cin >> answer;
 
-		if(answer != 1 && answer != 2)
+		if(answer != 1 && answer != 2 && answer != 3 && answer != 4)
 		{
 			cout << "You have type in an invalid input.\n";
 			system("pause");
@@ -44,29 +104,31 @@ int main()
 
 		if(answer == 1)
 		{
+			cube.display();
 			errorChecking = false;
 			while(!errorChecking)
 			{
 				cout << "How many times to scramble the Rubik's Cube?\n"
 					 << "-> ";
 				cin >> num;
-				if(num < 0)
-					cout << "Please enter more than 1\n";
+				if(num < 1)
+					cout << "Please enter at least 1\n";
 				else
 					errorChecking = true;
 			}
+			cout << "\n" << "Move to scramble:\n";
 			cube.scramble(num);
+			cout << "After scramble: \n";
 			cube.display();
+			cout << "End of scramble\n\n";
+			startCounter();
 			cube.solve(sequence);
-			cube.display();
-			cube.displayTurn(sequence);
-			int a = sequence.size();
-			cout << "Size =  " << a << "\n\n\n\n";
+			cout << "Solve complete\n";
+			interval = getCounter();
+			cout << interval << " microseconds\n\n";
+			cout << "Step to solve cube: \n";
 			cube.reduce(sequence);
 			cube.displayTurn(sequence);
-			int b = sequence.size();
-			cout << "Size after reduce=  " << b << "\n\n\n";
-			cout << "Diff = " << a-b << "\n";
 			answer = 0;
 			system("pause");
 		}
@@ -96,6 +158,83 @@ int main()
 			answer = 0;
 			system("pause");
 		}
+		else if(answer == 3)
+		{
+			cube.reset(sequence);
+			errorChecking = false;
+			while(!errorChecking)
+			{
+				cout << "How many entry to save: ";
+				cin >> size;
+				if(size < 1)
+					cout << "Please enter at least 1\n";
+				else
+					errorChecking = true;
+			}
+			errorChecking = false;
+			while(!errorChecking)
+			{
+				cout << "Scramble how many times for timer 1: ";
+				cin >> first;
+				if(first < 1)
+					cout << "Please enter at least 1\n";
+				else
+					errorChecking = true;
+			}
+			errorChecking = false;
+			while(!errorChecking)
+			{
+				cout << "Scramble how many times for timer 2: ";
+				cin >> second;
+				if(second < 1)
+					cout << "Please enter at least 1\n";
+				else
+					errorChecking = true;
+			}
+			errorChecking = false;
+			while(!errorChecking)
+			{
+				cout << "Scramble how many times for timer 3: ";
+				cin >> third;
+				if(third < 1)
+					cout << "Please enter at least 1\n";
+				else
+					errorChecking = true;
+			}
+
+			for(int i=0; i<size; i++)
+			{
+				cout << "Time " << i << ": ";
+				cube.reset(sequence);
+				cube.scramble(first);
+				startCounter();
+				cube.solve(sequence);
+				timer1.push_back(getCounter());
+			}
+			for(int i=0; i<size; i++)
+			{
+				cout << "Time " << i << ": ";
+				cube.reset(sequence);
+				cube.scramble(second);
+				startCounter();
+				cube.solve(sequence);
+				timer2.push_back(getCounter());
+			}
+			for(int i=0; i<size; i++)
+			{
+				cout << "Time " << i << ": ";
+				cube.reset(sequence);
+				cube.scramble(third);
+				startCounter();
+				cube.solve(sequence);
+				timer3.push_back(getCounter());
+			}
+			saveCSV(first, second, third, timer1, timer2, timer3);
+			system("pause");
+			answer = 0;
+		}
+		else if(answer == 4)
+			return 0;
 	}
 	return 0;
 }
