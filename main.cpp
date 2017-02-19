@@ -11,6 +11,7 @@ Conduct experimental tests to evaluate the effectiveness (measures the running t
 #include <windows.h>
 #include <fstream>
 #include <ctime>
+#include <sstream>
 #include "RCube.h"
 using namespace std;
 
@@ -63,12 +64,22 @@ void saveCSV(int first, int second, int third, vector<double> timer1, vector<dou
 	save.close();	
 }
 
+int convertStringToInt(string input)
+{
+	int output;
+	if (!(istringstream(input) >> output))
+		output = 0;
+	return output;
+}
+
 int main()
 {
 	srand(time(NULL));
 	int answer = 0, input, num;
+	string answerTemp, s, numTemp, sizeTemp, firstTemp, secondTemp, thirdTemp, tmp;
 	RCube cube;
 	vector<int> sequence;
+	vector<int> seq;
 	bool errorChecking = false;
 	double interval;
 	int first, second, third, size;
@@ -87,15 +98,18 @@ int main()
 			 << "Prepared by:\n"
 			 << "Name: Nicholas Tan Yu Zhe\tID: 1142701655\n"
 			 << "Name: Liew Soon Pang\t\tID: 1142700808\n\n"
-			 << "1. Scramble and solve the Rubik's Cube\n"
-			 << "2. Help\n"
-			 << "3. Generate CSV\n"
-			 << "4. Quit\n"
-			 << "Please enter 1 - 4 to continue\n"
+			 << "1. Manually key in cube and solve\n"
+			 << "2. Scramble and solve the Rubik's Cube\n"
+			 << "3. Help\n"
+			 << "4. Generate CSV\n"
+			 << "5. Quit\n"
+			 << "Please enter 1 - 5 to continue\n"
 			 << "-> ";
-		cin >> answer;
+		getline(cin, answerTemp);
+		answer = convertStringToInt(answerTemp);
 
-		if(answer != 1 && answer != 2 && answer != 3 && answer != 4)
+
+		if(answer != 1 && answer != 2 && answer != 3 && answer != 4 && answer != 5)
 		{
 			cout << "You have type in an invalid input.\n";
 			system("pause");
@@ -104,13 +118,56 @@ int main()
 
 		if(answer == 1)
 		{
+			seq.clear();
+			cout << "Straight key in string from top(1) -> left(2) -> front(3) -> right(4) -> back(5) -> down(6)\n"
+				 << "Use number to key in\n"
+				 << "-> ";
+			getline(cin, s);
+			if(s.length() != 54)
+				cout << "Invalid input. Please make sure you have key in exactly 54 input\n";
+			else
+			{
+				for(int i=0; i<54; i++)
+				{
+					tmp = s[i];
+					seq.push_back(convertStringToInt(tmp));
+				}
+				cube.setup(seq);
+				cube.display();
+				bool valid = cube.checkValid();
+				if(valid)
+				{
+					startCounter();
+					valid = cube.solve(sequence);
+					if(valid)
+					{
+
+						interval = getCounter();
+						cout << interval << " microseconds\n\n";
+						cout << "Step to solve cube: \n";
+						cube.reduce(sequence);
+						cube.displayTurn(sequence);
+						cube.display();
+					}
+					else
+						cout << "Invalid cube. Please fix the cube\n";
+				}
+				else
+					cout << "Invalid cube. Please fix the cube\n";
+			}
+			answer = 0;
+			system("pause");
+		}
+		else if(answer == 2)
+		{
 			cube.display();
 			errorChecking = false;
 			while(!errorChecking)
 			{
 				cout << "How many times to scramble the Rubik's Cube?\n"
 					 << "-> ";
-				cin >> num;
+				getline(cin, numTemp);
+				num = convertStringToInt(numTemp);
 				if(num < 1)
 					cout << "Please enter at least 1\n";
 				else
@@ -129,10 +186,11 @@ int main()
 			cout << "Step to solve cube: \n";
 			cube.reduce(sequence);
 			cube.displayTurn(sequence);
+			cube.display();
 			answer = 0;
 			system("pause");
 		}
-		else if(answer == 2)
+		else if(answer == 3)
 		{
 			system("CLS");
 			cout << "==========================================================\n"
@@ -158,14 +216,15 @@ int main()
 			answer = 0;
 			system("pause");
 		}
-		else if(answer == 3)
+		else if(answer == 4)
 		{
 			cube.reset(sequence);
 			errorChecking = false;
 			while(!errorChecking)
 			{
 				cout << "How many entry to save: ";
-				cin >> size;
+				getline(cin, sizeTemp);
+				size = convertStringToInt(sizeTemp);
 				if(size < 1)
 					cout << "Please enter at least 1\n";
 				else
@@ -175,7 +234,8 @@ int main()
 			while(!errorChecking)
 			{
 				cout << "Scramble how many times for timer 1: ";
-				cin >> first;
+				getline(cin, firstTemp);
+				first = convertStringToInt(firstTemp);
 				if(first < 1)
 					cout << "Please enter at least 1\n";
 				else
@@ -185,7 +245,8 @@ int main()
 			while(!errorChecking)
 			{
 				cout << "Scramble how many times for timer 2: ";
-				cin >> second;
+				getline(cin, secondTemp);
+				second = convertStringToInt(secondTemp);
 				if(second < 1)
 					cout << "Please enter at least 1\n";
 				else
@@ -195,7 +256,8 @@ int main()
 			while(!errorChecking)
 			{
 				cout << "Scramble how many times for timer 3: ";
-				cin >> third;
+				getline(cin, thirdTemp);
+				third = convertStringToInt(thirdTemp);
 				if(third < 1)
 					cout << "Please enter at least 1\n";
 				else
@@ -233,7 +295,7 @@ int main()
 			system("pause");
 			answer = 0;
 		}
-		else if(answer == 4)
+		else if(answer == 5)
 			return 0;
 	}
 	return 0;

@@ -52,12 +52,52 @@ void RCube::reset(vector<int>& sequence)
 		cube[i] = i;*/
 }
 
-void RCube::setup()
+void RCube::setup(vector<int> seq)
 {
-	int sequence[] = {1,1,5,1,1,5,4,2,3,4,4,3,2,2,2,2,5,6,6,1,2,6,3,3,5,4,4,6,1,1,4,4,5,5,5,1,4,3,3,2,5,3,2,3,3,2,6,6,4,6,6,1,6,5};
-
 	for(int i=0; i<54; i++)
-		cube[i] = sequence[i];
+		cube[i] = seq[i];
+}
+
+bool RCube::checkValid()
+{
+	int diff;
+	if(cube[4] == 1 && cube[13] == 2 && cube[22] == 3 && cube[31] == 4 && cube[40] == 5 && cube[49] == 6)
+	{
+		for(int i=0; i<4; i++)
+		{
+			diff = cube[21] - cube[14];
+			if(diff == 1 || diff == -3)
+				turnCubeToLeft();
+			else
+				return false;
+		}
+		for(int i=0; i<4; i++)
+		{
+			diff = cube[23] - cube[30];
+			if(diff == -1 || diff == 3)
+				turnCubeToLeft();
+			else
+				return false;
+		}
+		for(int i=0; i<4; i++)
+		{
+			diff = cube[19] - cube[7];
+			if(diff == 2 || diff == 1 || diff == 3 || diff == 4)
+				turnCubeToLeft();
+			else
+				return false;
+		}
+		for(int i=0; i<4; i++)
+		{
+			diff = cube[25] - cube[46];
+			if(diff == -3 || diff == -4 || diff == -2 || diff == -1)
+				turnCubeToLeft();
+			else
+				return false;
+		}
+	}
+	else
+		return false;
 }
 
 void RCube::turnUp()
@@ -709,9 +749,24 @@ void RCube::turnCubeSideToRight()
 
 void RCube::displayTurn(vector<int> sequence)
 {
+	cout << "Size of sequence: " << sequence.size() << endl;
 	for(int i=0; i<sequence.size(); i++)
 	{
-		if(sequence[i] == 0)
+		if(sequence[i] == 100)
+			cout << "\nSolved step 1\n\n";
+		else if(sequence[i] == 200)
+			cout << "\nSolved step 2\n\n";
+		else if(sequence[i] == 300)
+			cout << "\nSolved step 3\n\n";
+		else if(sequence[i] == 400)
+			cout << "\nSolved step 4\n\n";
+		else if(sequence[i] == 500)
+			cout << "\nSolved step 5\n\n";
+		else if(sequence[i] == 600)
+			cout << "\nSolved step 6\n\n";
+		else if(sequence[i] == 700)
+			cout << "\nSolved step 7\n";
+		else if(sequence[i] == 0)
 			cout << "U";
 		else if(sequence[i] == 1)
 			cout << "D";
@@ -795,7 +850,7 @@ void RCube::reduce(vector<int>& sequence)
 		{
 			for(int i=0; i<sequence.size()-3; i++)
 			{
-				if(sequence.size() > 1)
+				if(sequence.size() > 3)
 				{
 					if((sequence[i] == sequence[i+1]) && (sequence[i] == sequence[i+2]) && (sequence[i] == sequence[i+3]) && sequence.size() > 3) //Remove 4 same move
 					{
@@ -809,33 +864,63 @@ void RCube::reduce(vector<int>& sequence)
 					break;
 			}
 		}
+		if(sequence.size() > 2)
+		{
+			for(int i=0; i<sequence.size()-2; i++)
+			{
+				if(sequence.size() > 2)
+				{
+					if(sequence[i] == sequence[i+1] && sequence[i] == sequence[i+2])
+					{
+						sequence.erase(sequence.begin()+i);
+						sequence.erase(sequence.begin()+i);
+						if(sequence[i] < 9)
+							sequence[i] = sequence[i] + 9;
+						else if(sequence[i] < 18)
+							sequence[i] = sequence[i] - 9;
+						else if(sequence[i] > 26)
+						{
+							if(sequence[i] == 27 || sequence[i] == 29 || sequence[i] == 31)
+								sequence[i] = sequence[i] + 1;
+							else if(sequence[i] == 28 || sequence[i] == 30 || sequence[i] == 32)
+								sequence[i] = sequence[i] - 1;
+						}
+					}
+				}
+			}
+		}
 		if(sequence.size() > 1)
 		{
 			for(int i=0; i<sequence.size()-1; i++)
 			{
 				if(sequence.size() > 1)
 				{
-					if((sequence[i]+9 == sequence[i+1]) && sequence[i] < 9 && sequence.size() > 1) //To reduce clockwise with anti-clockwise
+					if((sequence[i]+9 == sequence[i+1]) && sequence[i] < 9) //To reduce clockwise with anti-clockwise
 					{
 						sequence.erase(sequence.begin()+i);
 						sequence.erase(sequence.begin()+i);
 					}
-					if((sequence[i]+1 == sequence[i+1]) && sequence[i] > 26 && sequence[i] < 33 && sequence.size() > 1) //X X' Y Y' Z Z'
+					if((sequence[i]-9 == sequence[i+1]) && sequence[i] < 18) //To reduce anti-clockwise with clockwise
 					{
 						sequence.erase(sequence.begin()+i);
 						sequence.erase(sequence.begin()+i);
 					}
-					if(sequence[i] == sequence[i+1] && sequence[i] < 9 && sequence.size() > 1) //To merge 2 same move (Clockwise)
+					if((sequence[i]+1 == sequence[i+1]) && sequence[i] > 26 && sequence[i] < 33) //X X' Y Y' Z Z'
+					{
+						sequence.erase(sequence.begin()+i);
+						sequence.erase(sequence.begin()+i);
+					}
+					if(sequence[i] == sequence[i+1] && sequence[i] < 9) //To merge 2 same move (Clockwise)
 					{
 						sequence.erase(sequence.begin()+i);
 						sequence[i] = sequence[i] + 18;
 					}
-					if(sequence[i] == sequence[i+1] && sequence[i] > 8 && sequence[i] < 18 && sequence.size() > 1) //To merge 2 same move (Counter Clockwise)
+					if(sequence[i] == sequence[i+1] && sequence[i] > 8 && sequence[i] < 18) //To merge 2 same move (Counter Clockwise)
 					{
 						sequence.erase(sequence.begin()+i);
 						sequence[i] = sequence[i] + 9;
 					}
-					if(sequence[i] == sequence[i+1] && sequence[i] > 26 && sequence[i] < 33 && sequence.size() > 1) //To merge 2 same move (X Y Z)
+					if(sequence[i] == sequence[i+1] && sequence[i] > 26 && sequence[i] < 33) //To merge 2 same move (X Y Z)
 					{
 						sequence.erase(sequence.begin()+i);
 						if(sequence[i] == 27 || sequence[i] == 28) //X / X'
@@ -863,7 +948,7 @@ void RCube::scramble(int times)
 			random = random + 3;
 		scrambleArray.push_back(random);
 	}
-	//reduce(scrambleArray);
+	reduce(scrambleArray);
 	displayTurn(scrambleArray);
 
 	for(int i=0; i<scrambleArray.size(); i++)
@@ -895,7 +980,7 @@ void RCube::scramble(int times)
 	}
 }
 
-void RCube::solve(vector<int>& sequence)
+bool RCube::solve(vector<int>& sequence)
 {
 	bool finish = false, step1 = false, step2 = false, step3 = false, step4 = false, step5 = false, step6 = false, step7 = false;
 	int diff, diff2, temp;
@@ -1294,6 +1379,7 @@ void RCube::solve(vector<int>& sequence)
 		}
 	}
 	finish = false;
+	sequence.push_back(100);
 
 	//Step 2: Solve white corners
 	//To make white side on top
@@ -1862,6 +1948,7 @@ void RCube::solve(vector<int>& sequence)
 		}
 	}
 	finish = false;
+	sequence.push_back(200);
 
 	//Step 3: Solve second layers
 	counter = 1;
@@ -1931,6 +2018,7 @@ void RCube::solve(vector<int>& sequence)
 			}
 		}
 	}
+	sequence.push_back(300);
 
 	//Step 4: Solve yellow cross
 	//Make yellow side on top
@@ -1964,6 +2052,7 @@ void RCube::solve(vector<int>& sequence)
 			}
 		}
 	}
+	sequence.push_back(400);
 
 	//Step 5: Fix yellow edges
 	counter = 1;
@@ -2021,6 +2110,7 @@ void RCube::solve(vector<int>& sequence)
 			}
 		}
 	}
+	sequence.push_back(500);
 	
 	i = 1;
 	//To reset the orange side as the front
@@ -2216,6 +2306,7 @@ void RCube::solve(vector<int>& sequence)
 		}
 	}
 	finish = false;
+	sequence.push_back(600);
 	
 	//Step 7: Orient yellow corner
 	while(!step7)
@@ -2284,6 +2375,11 @@ void RCube::solve(vector<int>& sequence)
 		}
 		if(!step7)
 		{
+			counter = 0;
+			if(counter == 4)
+			{
+				return false;
+			}
 			if(cube[8] != 1)
 			{
 				turnCRight();
@@ -2292,6 +2388,7 @@ void RCube::solve(vector<int>& sequence)
 				turnDown();
 				int array[] = {12,10,3,1};
 				sequence.insert(sequence.end(), array, array+4);
+				counter++;
 			}
 			else
 			{
@@ -2300,4 +2397,27 @@ void RCube::solve(vector<int>& sequence)
 			}
 		}
 	}
+	sequence.push_back(700);
+	// Double check whole cube is correct or not
+	while(cube[22] != 3)
+		turnCubeToLeft();
+	for(int i=0; i<9; i++)
+		if(cube[i] != 1)
+			return false;
+	for(int i=9; i<18; i++)
+		if(cube[i] != 2)
+			return false;
+	for(int i=18; i<27; i++)
+		if(cube[i] != 3)
+			return false;
+	for(int i=27; i<36; i++)
+		if(cube[i] != 4)
+			return false;
+	for(int i=36; i<45; i++)
+		if(cube[i] != 5)
+			return false;
+	for(int i=45; i<54; i++)
+		if(cube[i] != 6)
+			return false;
+	return true;
 }

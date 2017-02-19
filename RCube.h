@@ -13,7 +13,8 @@ public:
 	RCube();
 	void display();
 	void reset(vector<int>& sequence);
-	void setup();
+	void setup(vector<int> seq);
+	bool checkValid();
 	void turnUp();
 	void turnDown();
 	void turnLeft();
@@ -50,7 +51,7 @@ public:
 	void displayTurn(vector<int> sequence);
 	void reduce(vector<int>& sequence);
 	void scramble(int times);
-	void solve(vector<int>& sequence);
+	bool solve(vector<int>& sequence);
 };
 
 #include "RCube.cpp"
